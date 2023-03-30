@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Guessing Game</title>
+    <style>
+     body {
+  background-color: #f7f7f7;
+  font-family: Arial, sans-serif;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  padding: 20px;
+  margin: 50px auto;
+  max-width: 400px;
+}
+
+h1 {
+  color: #333;
+  text-align: center;
+  margin-top: 0;
+}
+p {
+  font-size: medium;
+  font-weight: 600;
+}
+select,
+input[type="text"],
+button {
+  font-size: 18px;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+select {
+  width: 80%;
+  background-color: #f7f7f7;
+}
+
+input[type="text"] {
+  width: 80%;
+  background-color: #f7f7f7;
+}
+
+button {
+  background-color: #333;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 80%;
+}
+
+button:hover {
+  background-color: #666;
+}
+
+      </style>    
+  </head>
+  <body>
+    <div class="container" style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+        <h1>Guessing Game</h1>
+        <p>Select a level:</p>
+        <select id="levelSelect">
+          <option value="easy">Easy (1-50)</option>
+          <option value="medium">Medium (1-75)</option>
+          <option value="hard">Hard (1-100)</option>
+        </select>
+        <p>Guess a number:</p>
+        <input type="text" id="guessInput">
+        <p id="errorMessage" style="color: red;"></p>
+        <p id="result"></p>
+        <button id="guessButton">Guess</button>
+        <button id="resetButton">Reset</button>
+      </div>     
+      <footer style="text-align: center; margin-top: 50px; font-size: 14px; color: #666;">
+        <p>Created by Munashe &copy; 2023</p>
+        <p>All rights reserved</p>
+      </footer>
+       
+    <script>
+      // Generate a random number within the range of the selected level
+function generateTargetNumber(level) {
+  let levelRange;
+  switch (level) {
+    case "easy":
+      levelRange = [1, 50];
+      break;
+    case "medium":
+      levelRange = [1, 75];
+      break;
+    case "hard":
+      levelRange = [1, 100];
+      break;
+  }
+  return Math.floor(Math.random() * (levelRange[1] - levelRange[0] + 1)) + levelRange[0];
+}
+
+// Initialize variables for guesses, result message, and selected level
+let guesses = [];
+let resultMessage = "";
+let level = "easy";
+let targetNumber = generateTargetNumber(level);
+
+// Handle the guess button click
+document.getElementById("guessButton").addEventListener("click", function() {
+  // Get the user's guess from the input field
+  const guess = parseInt(document.getElementById("guessInput").value);
+
+  // Get the range of the selected level
+  let levelRange;
+  switch (level) {
+    case "easy":
+      levelRange = [1, 50];
+      break;
+    case "medium":
+      levelRange = [1, 75];
+      break;
+    case "hard":
+      levelRange = [1, 100];
+      break;
+  }
+
+  // Validate the user's guess
+  if (isNaN(guess) || guess < levelRange[0] || guess > levelRange[1]) {
+    resultMessage = `Please enter a number between ${levelRange[0]} and ${levelRange[1]}.`;
+    document.getElementById("errorMessage").textContent = resultMessage;
+  } else if (guesses.includes(guess)) {
+    resultMessage = "You already guessed that number. Try again.";
+    document.getElementById("errorMessage").textContent = resultMessage;
+  } else {
+    // Add the guess to the list of guesses
+    guesses.push(guess);
+
+    // Check if the guess is correct
+    if (guess === targetNumber) {
+      resultMessage = `Congratulations! You guessed the number in ${guesses.length} tries.`;
+      document.getElementById("guessButton").disabled = true;
+    } else {
+      // Determine if the guess is higher or lower than the target number
+      const difference = guess - targetNumber;
+      const higherOrLower = difference > 0 ? "higher" : "lower";
+
+      // Provide feedback to the user
+      resultMessage = `Your guess is ${higherOrLower} than the target number. You have guessed ${guesses.length} times.`;
+      document.getElementById("errorMessage").textContent = "";
+    }
+
+    // Update the result message in the HTML
+    document.getElementById("result").textContent = resultMessage;
+  }
+});
+
+// Handle the reset button click
+document.getElementById("resetButton").addEventListener("click", function() {
+  // Reset the game
+  level = "easy";
+  targetNumber = generateTargetNumber(level);
+  guesses = [];
+  resultMessage = "";
+  document.getElementById("guessInput").value = "";
+  document.getElementById("result").textContent = "";
+  document.getElementById("guessButton").disabled = false;
+});
+
+// Handle the level select change
+document.getElementById("levelSelect").addEventListener("change", function() {
+  // Update the selected level and reset the game
+  level = this.value;
+  targetNumber = generateTargetNumber(level);
+  guesses = [];
+  resultMessage = "";
+  document.getElementById("guessInput").value = "";
+  document.getElementById("result").textContent = "";
+  document.getElementById("guessButton").disabled = false;
+  document.getElementById("errorMessage").textContent = "";
+});
+
+    </script>
+  </body>
+  
+</html>
